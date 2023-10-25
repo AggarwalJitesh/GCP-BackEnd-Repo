@@ -1,7 +1,7 @@
 steps:
-- name: 'gcr.io/cloud-builders/python'
-  args: ['python', '-m', 'venv', 'env']
-  dir: 'my_flask_app'
+# - name: 'gcr.io/cloud-builders/python'
+#   args: ['python', '-m', 'venv', 'env']
+#   dir: 'my_flask_app'
 
 - name: 'gcr.io/cloud-builders/python'
   args: ['source', 'env/bin/activate']
