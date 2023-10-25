@@ -1,7 +1,6 @@
-flask
-flask_cors
-keras
-cv2
-numpy
-os
-werkzeug
+Flask==2.0
+Flask-CORS==3.1.1
+Keras==2.6.0
+opencv-python==4.5.3
+numpy==1.21.3
+Werkzeug==2.1.1

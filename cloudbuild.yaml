@@ -1,9 +1,16 @@
 steps:
-# tep 1: Build the Flask application
-# Step 1: Build the Flask application
+- name: 'gcr.io/cloud-builders/python'
+  args: ['python', '-m', 'venv', 'env']
+  dir: 'my_flask_app'
+
+- name: 'gcr.io/cloud-builders/python'
+  args: ['source', 'env/bin/activate']
+  dir: 'my_flask_app' 
+
 - name: 'gcr.io/cloud-builders/python'
   args: ['pip', 'install', '-r', 'requirements.txt']
   dir: 'my_flask_app' 
+
 - name: 'gcr.io/cloud-builders/python'
   args: ['python', 'app.py']  
   dir: 'my_flask_app'  
