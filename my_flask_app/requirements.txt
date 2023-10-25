@@ -1,0 +1,7 @@
+flask
+flask_cors
+keras
+cv2
+numpy
+os
+werkzeug
