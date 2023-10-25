@@ -3,6 +3,8 @@ steps:
 #   args: ['python', '-m', 'venv', 'env']
 #   dir: 'my_flask_app'
 
+
+# uild the Docker image
 - name: 'gcr.io/cloud-builders/python:3.8'
   args: ['source', 'env/bin/activate']
   dir: 'my_flask_app' 
