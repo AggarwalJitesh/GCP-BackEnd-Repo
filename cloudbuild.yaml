@@ -1,4 +1,5 @@
 steps:
+# tep 1: Build the Flask application
 # Step 1: Build the Flask application
 - name: 'gcr.io/cloud-builders/python'
   args: ['pip', 'install', '-r', 'requirements.txt']
@@ -11,6 +12,7 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/your-project-id/flask-repo/my-backend:${SHORT_SHA}', '.' ]
   dir: 'my_flask_app'  
+ 
 
 # Step 3: Push the Docker image to Google Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
