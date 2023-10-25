@@ -3,15 +3,15 @@ steps:
 #   args: ['python', '-m', 'venv', 'env']
 #   dir: 'my_flask_app'
 
-- name: 'gcr.io/cloud-builders/python:latest'
+- name: 'gcr.io/cloud-builders/python:3.8'
   args: ['source', 'env/bin/activate']
   dir: 'my_flask_app' 
 
-- name: 'gcr.io/cloud-builders/python:latest'
+- name: 'gcr.io/cloud-builders/python:3.8'
   args: ['pip', 'install', '-r', 'requirements.txt']
   dir: 'my_flask_app' 
 
-- name: 'gcr.io/cloud-builders/python:latest'
+- name: 'gcr.io/cloud-builders/python:3.8'
   args: ['python', 'app.py']  
   dir: 'my_flask_app'  
 
