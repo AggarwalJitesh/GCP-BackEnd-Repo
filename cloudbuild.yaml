@@ -1,23 +1,23 @@
 steps:
-# - name: 'gcr.io/cloud-builders/gsutil'
-#   args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
 
-- name: 'gcr.io/cloud-builders/python'
-  args: ['python', '-m', 'venv', 'env']
-  dir: 'my_flask_app'
+# - name: 'gcr.io/cloud-builders/python'
+#   args: ['python', '-m', 'venv', 'env']
+#   dir: 'my_flask_app'
 
 
-- name: 'gcr.io/cloud-builders/python:3.8'
-  args: ['source', 'env/bin/activate']
-  dir: 'my_flask_app' 
+# - name: 'gcr.io/cloud-builders/python:3.8'
+#   args: ['source', 'env/bin/activate']
+#   dir: 'my_flask_app' 
 
-- name: 'gcr.io/cloud-builders/python:3.8'
-  args: ['pip', 'install', '-r', 'requirements.txt']
-  dir: 'my_flask_app' 
+# - name: 'gcr.io/cloud-builders/python:3.8'
+#   args: ['pip', 'install', '-r', 'requirements.txt']
+#   dir: 'my_flask_app' 
 
-- name: 'gcr.io/cloud-builders/python:3.8'
-  args: ['python', 'app.py']  
-  dir: 'my_flask_app' 
+# - name: 'gcr.io/cloud-builders/python:3.8'
+#   args: ['python', 'app.py']  
+#   dir: 'my_flask_app' 
 
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t','asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
