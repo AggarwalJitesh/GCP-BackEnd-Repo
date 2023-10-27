@@ -1,6 +1,6 @@
 steps:
-- name: 'gcr.io/cloud-builders/gsutil'
-  args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
+# - name: 'gcr.io/cloud-builders/gsutil'
+#   args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
 
 - name: 'gcr.io/cloud-builders/docker'
   args: [ 'build', '-t','gcr.io/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
