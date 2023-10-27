@@ -1,4 +1,30 @@
 steps:
+- name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+      - "."
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+
+images:
+  - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+
+artifacts:
+  objects:
+    location: "us-central1"
+    paths:
+      - "Dockerfile"
+      - "app.py"
+      - "requirements.txt"
+  target: "flask-app/"
+  bucket: "flaskbuckett"
+  
+substitutions:
+  _IMAGE: "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
 # - name: 'gcr.io/cloud-builders/python'
 #   args: ['python', '-m', 'venv', 'env']
 #   dir: 'my_flask_app'
@@ -18,19 +44,19 @@ steps:
 #   dir: 'my_flask_app'  
 
   # Install dependencies
-- name: python
-  entrypoint: pip
-  args: ["install", "-r", "/Users/jiteshaggarwal/Desktop/appOfFlask/my_flask_app/requirements.txt", "--user"]
+# - name: python
+#   entrypoint: pip
+#   args: ["install", "-r", "/Users/jiteshaggarwal/Desktop/appOfFlask/my_flask_app/requirements.txt", "--user"]
 
-# Step 2: Build the Docker image
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/your-project-id/flask-repo/my-backend:${SHORT_SHA}', '.' ]
-  dir: 'my_flask_app'  
+# # Step 2: Build the Docker image
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['build', '-t', 'gcr.io/your-project-id/flask-repo/my-backend:${SHORT_SHA}', '.' ]
+#   dir: 'my_flask_app'  
  
 
-# Step 3: Push the Docker image to Google Artifact Registry
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/block-convey-p1/flask-repo/my-backend:${SHORT_SHA}']
+# # Step 3: Push the Docker image to Google Artifact Registry
+# - name: 'gcr.io/cloud-builders/docker'
+#   args: ['push', 'gcr.io/block-convey-p1/flask-repo/my-backend:${SHORT_SHA}']
 
-images:
-- 'gcr.io/block-convey-p1/your-image-name:$COMMIT_SHA'
+# images:
+# - 'gcr.io/block-convey-p1/your-image-name:$COMMIT_SHA'
