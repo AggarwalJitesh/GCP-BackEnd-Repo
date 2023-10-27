@@ -20,7 +20,7 @@ steps:
   # Install dependencies
 - name: python
   entrypoint: pip
-  args: ["install", "-r", "requirements.txt", "--user"]
+  args: ["install", "-r", "/Users/jiteshaggarwal/Desktop/appOfFlask/my_flask_app/requirements.txt", "--user"]
 
 # Step 2: Build the Docker image
 - name: 'gcr.io/cloud-builders/docker'
