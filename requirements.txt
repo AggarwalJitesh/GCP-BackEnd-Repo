@@ -1,6 +1,6 @@
 Flask==2.0
 Flask-CORS==3.0.1
 Keras==2.6.0
-opencv-python==4.5.3
+opencv-python==4.5.3.56
 numpy==1.21.3
 Werkzeug==2.1.1
