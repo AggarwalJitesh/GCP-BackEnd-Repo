@@ -25,6 +25,10 @@ artifacts:
   
 substitutions:
   _IMAGE: "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+
+
+
+  
 # - name: 'gcr.io/cloud-builders/python'
 #   args: ['python', '-m', 'venv', 'env']
 #   dir: 'my_flask_app'
