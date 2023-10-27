@@ -1,32 +1,28 @@
 steps:
-- name: "gcr.io/cloud-builders/docker"
-  args:
-    - "build"
-    - "-t"
-    - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
-    - "."
-- name: "gcr.io/cloud-builders/docker"
-  args:
-    - "push"
-    - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
 
-images:
-  - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+- name: 'gcr.io/cloud-builders/docker'
+  args: [ 'build', '-t','gcr.io/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
 
-artifacts:
-  objects:
-    location: "us-central1"
-    paths:
-      - "Dockerfile"
-      - "app.py"
-      - "requirements.txt"
-  bucket: "gs://flaskbuckett"
+- name: "gcr.io/cloud-builders/docker"
+  args: ['push', 'gcr.io/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}']
+
+# artifacts:
+#   objects:
+#     location: "us-central1"
+#     paths:
+#       - "Dockerfile"
+#       - "app.py"
+#       - "requirements.txt"
+#   bucket: "gs://flaskbuckett"
 
   
 substitutions:
-
-  _IMAGE: "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
   _BUCKET_NAME: flaskbuckett
+
+images:
+  - gcr.io/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}
 
 
 
