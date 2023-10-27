@@ -5,17 +5,22 @@ steps:
 
 
 # uild the Docker image
-- name: 'gcr.io/cloud-builders/python:3.8'
-  args: ['source', 'env/bin/activate']
-  dir: 'my_flask_app' 
+# - name: 'gcr.io/cloud-builders/python:3.8'
+#   args: ['source', 'env/bin/activate']
+#   dir: 'my_flask_app' 
 
-- name: 'gcr.io/cloud-builders/python:3.8'
-  args: ['pip', 'install', '-r', 'requirements.txt']
-  dir: 'my_flask_app' 
+# - name: 'gcr.io/cloud-builders/python:3.8'
+#   args: ['pip', 'install', '-r', 'requirements.txt']
+#   dir: 'my_flask_app' 
 
-- name: 'gcr.io/cloud-builders/python:3.8'
-  args: ['python', 'app.py']  
-  dir: 'my_flask_app'  
+# - name: 'gcr.io/cloud-builders/python:3.8'
+#   args: ['python', 'app.py']  
+#   dir: 'my_flask_app'  
+
+  # Install dependencies
+- name: python
+  entrypoint: pip
+  args: ["install", "-r", "requirements.txt", "--user"]
 
 # Step 2: Build the Docker image
 - name: 'gcr.io/cloud-builders/docker'
