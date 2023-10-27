@@ -20,7 +20,7 @@ artifacts:
       - "Dockerfile"
       - "app.py"
       - "requirements.txt"
-  destination: "flask-app/"
+  target: "flask-app/"
   gsbucket: "gs://flaskbuckett"
 
   
