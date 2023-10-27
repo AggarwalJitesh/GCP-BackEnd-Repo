@@ -1,14 +1,14 @@
 steps:
 - name: "gcr.io/cloud-builders/docker"
-    args:
-      - "build"
-      - "-t"
-      - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
-      - "."
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      - "push"
-      - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+  args:
+    - "build"
+    - "-t"
+    - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+    - "."
+- name: "gcr.io/cloud-builders/docker"
+  args:
+    - "push"
+    - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
 
 images:
   - "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
