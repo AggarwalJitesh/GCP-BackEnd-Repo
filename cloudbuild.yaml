@@ -23,7 +23,7 @@ steps:
   args: [ 'build', '-t','asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
 
 - name: "gcr.io/cloud-builders/docker"
-  args: ['push', 'asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:d00cd54']
+  args: ['push', 'asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}']
 
 
 # artifacts:
