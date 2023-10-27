@@ -20,11 +20,13 @@ artifacts:
       - "Dockerfile"
       - "app.py"
       - "requirements.txt"
-  gsbucket: "gs://flaskbuckett/flask-app/"
+  bucket: "gs://flaskbuckett"
 
   
 substitutions:
+
   _IMAGE: "gcr.io/block-convey-p1/flask-repo/flask-app:latest"
+  _BUCKET_NAME: flaskbuckett
 
 
 
