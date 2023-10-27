@@ -21,7 +21,7 @@ artifacts:
       - "app.py"
       - "requirements.txt"
   destination: "flask-app/"
-  bucket: "gs://flaskbuckett"
+  gsbucket: "gs://flaskbuckett"
 
   
 substitutions:
