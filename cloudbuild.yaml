@@ -3,10 +3,10 @@ steps:
 #   args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t','gcr.io/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
+  args: [ 'build', '-t','asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
 
 - name: "gcr.io/cloud-builders/docker"
-  args: ['push', 'gcr.io/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}']
+  args: ['push', 'asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}']
 
 # artifacts:
 #   objects:
