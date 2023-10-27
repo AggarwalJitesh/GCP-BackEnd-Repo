@@ -1,30 +1,41 @@
-# Use a specific Python version
-FROM python:3.9-slim-buster
+# FROM python:3.9-slim-buster
 
-# Specify the Python version in a label
-LABEL python_version="3.9"
+# LABEL python_version="3.9"
 
-# Set the working directory
+# WORKDIR /app
+
+# COPY ./requirements.txt /app/
+
+# RUN pip install -r requirements.txt
+
+# COPY . .
+
+# EXPOSE 5000
+
+# ENV FLASK_APP=app.py
+
+# CMD ["flask", "run", "--host", "0.0.0.0"]
+
+
+FROM python:3.8
+
+# Set the working directory to /app
 WORKDIR /app
 
-# Copy just the requirements file first to leverage Docker cache
-COPY ./requirements.txt /app/
+# Copy the current directory contents into the container at /app
+COPY . /app
 
-# Install requirements
-RUN pip install -r requirements.txt
+# Install any needed packages specified in requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-# Copy the rest of the application code
-COPY . .
+# Make port 80 available to the world outside this container
+EXPOSE 80
 
-# Expose the port the app runs on
-EXPOSE 5000
+# Define environment variable
+ENV NAME World
 
-# Set the Flask app environment variable
-ENV FLASK_APP=app.py
-
-# Define the command to run the application
-CMD ["flask", "run", "--host", "0.0.0.0"]
-
+# Run app.py when the container launches
+CMD ["python", "app.py"]
 
 
 
