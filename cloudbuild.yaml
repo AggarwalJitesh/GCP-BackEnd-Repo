@@ -20,11 +20,10 @@ steps:
 #   dir: 'my_flask_app' 
 
 - name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t','asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:$COMMIT_SHA', '-t', 'asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:latest', '.' ]
-
+  args: [ 'build', '-t','asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}', '.' ]
 
 - name: "gcr.io/cloud-builders/docker"
-  args: ['push', 'asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:${SHORT_SHA}']
+  args: ['push', 'asia-south1-docker.pkg.dev/block-convey-p1/flask-repo/flask-app:latest']
 
 
 # artifacts:
