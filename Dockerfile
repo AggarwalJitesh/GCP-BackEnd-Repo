@@ -1,42 +1,3 @@
-# FROM python:3.9-slim-buster
-
-# LABEL python_version="3.9"
-
-# WORKDIR /app
-
-# COPY ./requirements.txt /app/
-
-# RUN pip install -r requirements.txt
-
-# COPY . .
-
-# EXPOSE 5000
-
-# ENV FLASK_APP=app.py
-
-# CMD ["flask", "run", "--host", "0.0.0.0"]
-
-
-# FROM python:3.8
-
-# # Set the working directory to /app
-# WORKDIR /app
-
-# # Copy the current directory contents into the container at /app
-# COPY . /app
-
-# # Install any needed packages specified in requirements.txt
-# RUN pip install --trusted-host pypi.python.org -r requirements.txt
-
-# # Make port 80 available to the world outside this container
-# EXPOSE 8080
-
-# # Define environment variable
-# ENV FLASK_APP=app.py
-
-# # Run app.py when the container launches
-# CMD ["python", "app.py"]
-
 FROM python:3.8-slim-buster
 
 # set work directory
@@ -47,30 +8,22 @@ WORKDIR $APP_HOME
 ENV PYTHONUNBUFFERED 1
 
 # install dependencies
-# RUN pip3 install --upgrade pip
 
 RUN python3 -m pip install --upgrade pip
 COPY ./requirements.txt .
-
-
 RUN pip install -r requirements.txt
 
 # Create a virtual environment (venv) and activate it
 # RUN python -m venv venv
 # RUN /bin/bash -c "source venv/bin/activate"
 
-
-# COPY ./requirements.txt .
-# RUN pip3 install --no-cache-dir -r requirements.txt
-# RUN pip3 install -r requirements.txt
-
-
 # copy project
 COPY . .
 
 EXPOSE 8080
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 run:app
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "8", "--timeout", "0", "run:app"]
+# CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 run:app
 
 
 
