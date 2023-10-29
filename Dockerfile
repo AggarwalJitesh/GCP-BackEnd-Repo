@@ -37,7 +37,7 @@
 # # Run app.py when the container launches
 # CMD ["python", "app.py"]
 
-FROM python:3.10.7-slim-buster
+FROM python:3.8-slim-buster
 
 # set work directory
 ENV APP_HOME /app
@@ -47,15 +47,22 @@ WORKDIR $APP_HOME
 ENV PYTHONUNBUFFERED 1
 
 # install dependencies
-RUN pip3 install --upgrade pip
+# RUN pip3 install --upgrade pip
+
+RUN python3 -m pip install --upgrade pip
+COPY ./requirements.txt .
+
+
+RUN pip install -r requirements.txt
 
 # Create a virtual environment (venv) and activate it
-RUN python -m venv venv
-RUN /bin/bash -c "source venv/bin/activate"
+# RUN python -m venv venv
+# RUN /bin/bash -c "source venv/bin/activate"
 
 
-COPY ./requirements.txt .
-RUN pip3 install -r requirements.txt
+# COPY ./requirements.txt .
+# RUN pip3 install --no-cache-dir -r requirements.txt
+# RUN pip3 install -r requirements.txt
 
 
 # copy project
