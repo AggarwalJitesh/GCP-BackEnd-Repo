@@ -48,10 +48,14 @@ ENV PYTHONUNBUFFERED 1
 
 # install dependencies
 RUN pip install --upgrade pip
-COPY ./requirements.txt .
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
 
-# RUN pip install -r requirements.txt
+# Create a virtual environment (venv) and activate it
+RUN python -m venv venv
+RUN /bin/bash -c "source venv/bin/activate"
+
+
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
 
 
 # copy project
