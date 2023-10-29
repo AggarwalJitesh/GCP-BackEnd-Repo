@@ -47,7 +47,7 @@ WORKDIR $APP_HOME
 ENV PYTHONUNBUFFERED 1
 
 # install dependencies
-RUN pip install --upgrade pip
+RUN pip3 install --upgrade pip
 
 # Create a virtual environment (venv) and activate it
 RUN python -m venv venv
@@ -55,7 +55,7 @@ RUN /bin/bash -c "source venv/bin/activate"
 
 
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 
 # copy project
