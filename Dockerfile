@@ -1,13 +1,10 @@
 FROM python:3.8-slim-buster
 
-# set work directory
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 
-# allow statements and log message to immediately appear in the Knative logs
 ENV PYTHONUNBUFFERED 1
 
-# install dependencies
 
 RUN python3 -m pip install --upgrade pip
 COPY ./requirements.txt .
