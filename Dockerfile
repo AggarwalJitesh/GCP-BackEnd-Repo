@@ -21,8 +21,14 @@ RUN pip install -r requirements.txt
 COPY . .
 
 EXPOSE 8080
+ENV PORT 8080
+ENV HOST 0.0.0.0
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "8", "--timeout", "0", "run:app"]
+
+ENTRYPOINT [ "python" "app.py"]
+CMD [ "runserver", "0.0.0.0:8080" ]
+
+# CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "1", "--threads", "8", "--timeout", "0", "run:app"]
 # CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 run:app
 
 
