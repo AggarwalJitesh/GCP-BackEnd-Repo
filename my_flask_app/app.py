@@ -30,6 +30,11 @@ def predict_result(predict):
     return labels[indices]
 
 
+@app.route('/')
+def hello_world():
+    return 'Hello World'
+
+
 @app.route('/upload', methods=['POST', 'OPTIONS'])
 def upload_image():
     if 'image' not in request.files:
