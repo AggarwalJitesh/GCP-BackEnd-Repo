@@ -15,7 +15,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'This is your secret key to utilize session in Flask'
 
-model = load_model("/Users/jiteshaggarwal/Desktop/appOfFlask/model.h5")
+model = load_model("../model.h5")
 
 
 def predict_result(predict):
@@ -55,4 +55,6 @@ def upload_image():
     return jsonify({'message': str(pred)})
 
 if __name__ == '__main__':
-    app.run(port=int(os.environ.get("PORT",8080)),host='0.0.0.0',debug=True)
+    app.run(debug=True)
+
+    # app.run(port=int(os.environ.get("PORT",8080)),host='0.0.0.0',debug=True)
