@@ -19,6 +19,8 @@ app.secret_key = 'This is your secret key to utilize session in Flask'
 
 model = load_model("model.h5")
 
+cors = CORS(app, resources={r"/upload": {"origins": "https://website-hmq66d7qyq-uc.a.run.app:80"}})
+
 
 def predict_result(predict):
     img = cv2.imread(predict)
@@ -49,8 +51,7 @@ def upload_image():
             image_bytes = file.read()
             pillow_img = Image.open(io.BytesIO(image_bytes)).convert('L')
             prediction = predict_result(pillow_img)
-            data = {"prediction": int(prediction)}
-            return jsonify(data)
+            return jsonify({'message': str(prediction)})
         except Exception as e:
             return jsonify({"error": str(e)})
 
