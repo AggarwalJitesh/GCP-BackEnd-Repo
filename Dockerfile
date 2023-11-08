@@ -24,7 +24,8 @@ RUN pip install -r requirements.txt
 # ENV PORT 8080
 # ENV HOST 0.0.0.0
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+# CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+CMD exec gunicorn -w 2 -k uvicorn.workers.UvicornWorker app:app
 
 # ENTRYPOINT [ "python" "app.py"]
 # CMD [ "gunicorn", "0.0.0.0:8080" ]
