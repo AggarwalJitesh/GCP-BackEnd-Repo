@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/uploads/')
 app = Flask(__name__)
-CORS(app)
+CORS(app,origins="*")
 
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -19,7 +19,6 @@ app.secret_key = 'This is your secret key to utilize session in Flask'
 
 model = load_model("model.h5")
 
-CORS(app, origins = ["https://website-hmq66d7qyq-uc.a.run.app:80"])
 
 
 def predict_result(predict):
@@ -76,6 +75,6 @@ def upload_image():
     # return jsonify({'message': str(pred)})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
 
-    # app.run(port=int(os.environ.get("PORT",8080)),host='0.0.0.0',debug=True)
+    app.run(port=int(os.environ.get("PORT",5000)),host='0.0.0.0',debug=True)
