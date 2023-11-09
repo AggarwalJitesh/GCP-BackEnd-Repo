@@ -19,7 +19,7 @@ app.secret_key = 'This is your secret key to utilize session in Flask'
 
 model = load_model("model.h5")
 
-cors = CORS(app, resources={r"/upload": {"origins": "https://website-hmq66d7qyq-uc.a.run.app:80"}})
+CORS(app, origins = ["https://website-hmq66d7qyq-uc.a.run.app:80"])
 
 
 def predict_result(predict):

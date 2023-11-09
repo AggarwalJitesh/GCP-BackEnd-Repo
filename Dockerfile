@@ -13,8 +13,8 @@ RUN python3 -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Create a virtual environment (venv) and activate it
-# RUN python -m venv venv
-# RUN /bin/bash -c "source venv/bin/activate"
+RUN python -m venv venv
+RUN /bin/bash -c "source venv/bin/activate"
 # copy project
 
 # COPY . .
