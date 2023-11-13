@@ -23,7 +23,7 @@ EXPOSE 5000
 ENV PORT 5000
 ENV HOST 0.0.0.0
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:main
 # CMD exec gunicorn -w 2 -k uvicorn.workers.UvicornWorker app:app
 
 # ENTRYPOINT [ "python" "app.py"]

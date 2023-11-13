@@ -79,3 +79,7 @@ images:
 
 # images:
 # - 'gcr.io/block-convey-p1/your-image-name:$COMMIT_SHA'
+
+
+
+images = port(0.0.0.0:8000)
