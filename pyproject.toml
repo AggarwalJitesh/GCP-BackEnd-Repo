@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "appofflask"
+version = "0.1.0"
+description = ""
+authors = ["Jitesh Aggarwal <96955945+AggarwalJitesh@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^2.0"
+Flask-CORS = "^3.0.1"
+Keras = "^2.6.0"
+opencv-python = "^4.5.3.56"
+numpy = "^1.21.3"
+Werkzeug = "^2.1.1"
+gunicorn = "^20.1.0"
+uvicorn = "^0.20.0"
+pillow = "^8.2.0"
+fastapi = "^0.104.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

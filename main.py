@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, render_template
 from flask_cors import CORS
 import numpy as np
 import cv2
@@ -34,8 +34,8 @@ def predict_result(predict):
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello World'
+def home():
+   return render_template('index.html')
 
 
 @app.route('/upload', methods=['POST', 'OPTIONS'])
