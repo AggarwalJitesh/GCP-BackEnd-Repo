@@ -1,6 +1,9 @@
 FROM google/cloud-sdk:alpine AS builder
 
 # RUN mkdir model && gsutil -m cp -r gs://flaskbuckett
+
+RUN mkdir model
+COPY . /model
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
 
 ENV PYTHONUNBUFFERED True
