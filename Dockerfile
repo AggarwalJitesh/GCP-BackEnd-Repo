@@ -10,7 +10,7 @@ WORKDIR $APP_HOME
 RUN pip install poetry
 COPY poetry.lock pyproject.toml $APP_HOME/
 
-RUN poetry config virtualenvs. create false 
+RUN poetry config virtualenvs.create false 
 RUN poetry install --no-dev
 COPY . $APP_HOME/
 COPY --from=builder model .
