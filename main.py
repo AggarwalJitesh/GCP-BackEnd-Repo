@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, session, render_template
 from flask_cors import CORS
+from fastapi import FastAPI
 import numpy as np
 import cv2
 import os
@@ -10,8 +11,9 @@ from keras.models import load_model
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/uploads/')
-app = Flask(__name__)
-CORS(app,origins="*")
+# app = Flask(__name__)
+# CORS(app,origins="*")
+app = FastAPI()
 
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -74,7 +76,7 @@ def upload_image():
     # pred = predict_result(img_file_path)
     # return jsonify({'message': str(pred)})
 
-if __name__ == '__main__':
-    # app.run(debug=True)
+# if __name__ == '__main__':
+#     # app.run(debug=True)
 
-    app.run(port=int(os.environ.get("PORT",5000)),host='0.0.0.0',debug=True)
+#     app.run(port=int(os.environ.get("PORT",5000)),host='0.0.0.0',debug=True)

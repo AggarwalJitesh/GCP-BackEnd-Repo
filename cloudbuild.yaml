@@ -1,6 +1,6 @@
 steps:
-- name: 'gcr.io/cloud-builders/gsutil'
-  args: ['cp', '-r', 'APPOFFLASK', 'gs://flaskbuckett/']
+# - name: 'gcr.io/cloud-builders/gsutil'
+#   args: ['cp', '-r', 'APPOFFLASK', 'gs://flaskbuckett/']
   # args: ['-m', 'rsync', '-r', 'build/', 'gs://flaskbuckett']
 
 # - name: 'gcr.io/cloud-builders/python'
