@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, session, render_template
 from flask_cors import CORS
 from fastapi import FastAPI
+from uvicorn import run
 import numpy as np
 import cv2
 import os
@@ -9,17 +10,22 @@ from PIL import Image
 from os.path import join, dirname, realpath
 from keras.models import load_model
 from werkzeug.utils import secure_filename
+from typing_extensions import Annotated, Final, Literal, TypeGuard, get_args, get_origin
+from typing import Type
+
 
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'static/uploads/')
 # app = Flask(__name__)
 # CORS(app,origins="*")
 app = FastAPI()
 
-app.config['SESSION_TYPE'] = 'filesystem'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.secret_key = 'This is your secret key to utilize session in Flask'
+# app.config['SESSION_TYPE'] = 'filesystem'
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.secret_key = 'This is your secret key to utilize session in Flask'
 
 model = load_model("model.h5")
+
+MyType = Type[int]
 
 
 
@@ -81,5 +87,5 @@ def upload_image():
 
 #     app.run(port=int(os.environ.get("PORT",5000)),host='0.0.0.0',debug=True)
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    run(app, reload=True)
+    # uvicorn.run(app, host="0.0.0.0", port=5000)
