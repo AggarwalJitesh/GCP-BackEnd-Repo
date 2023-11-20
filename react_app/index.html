@@ -1,8 +1,16 @@
-<html>
-<head>
-<title>Flask Tutorial</title>
-</head>
-<body>
-<h1>This is the Index page</h1>
-</body>
-</html> 
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' http://127.0.0.1:8000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/x-icon"
+    />
+    <!-- Other meta tags and links -->
+  </head>
+  <body>
+    <h1>This is the Index page</h1>
+  </body>
+</html>
