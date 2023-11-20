@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from flask import Flask, send_from_directory
 from PIL import Image
 import numpy as np
-import tensorflow as tf
+
+from keras.models import load_model
+# import tensorflow as tf
 
 app = FastAPI()
 
@@ -18,7 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = tf.keras.models.load_model('model.h5')
+
+model = load_model('model.h5')
+
+# model = tf.keras.models.load_model('model.h5')
 
 
 @app.post("/classify")
