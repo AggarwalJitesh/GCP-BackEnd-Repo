@@ -24,6 +24,9 @@
 
 # CMD uvicorn --host 0.0.0.0 main:app --port $PORT
 
+
+
+
 FROM google/cloud-sdk:alpine AS builder
 
 # RUN mkdir model && gsutil -m cp -r gs://flaskbuckett

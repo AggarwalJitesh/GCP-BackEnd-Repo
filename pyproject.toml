@@ -22,8 +22,6 @@ fastapi = "^0.104.1"
 
 
 
-
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
