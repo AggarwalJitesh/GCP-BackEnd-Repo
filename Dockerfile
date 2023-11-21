@@ -53,4 +53,4 @@ ENV CUSTOM_MODEL_PATH="/home/model/distilbert-base-uncased"
 ENV ABSTRACTIVE_MODEL_PATH="/home/model/bart-model"
 ENV MODEL_SERVE="True"
 
-CMD uvicorn --host 0.0.0.0 --port $PORT main:app
+CMD uvicorn --host 0.0.0.0 --port $PORT app:app
