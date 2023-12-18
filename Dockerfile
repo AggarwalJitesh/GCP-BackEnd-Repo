@@ -39,7 +39,7 @@ ENV PYTHONUNBUFFERED True
 ENV APP_HOME /home
 WORKDIR $APP_HOME
 
-RUN pip install poetry
+RUN pip install poetryr
 COPY poetry.lock pyproject.toml $APP_HOME/
 
 RUN poetry config virtualenvs.create false 
@@ -53,4 +53,6 @@ ENV CUSTOM_MODEL_PATH="/home/model/distilbert-base-uncased"
 ENV ABSTRACTIVE_MODEL_PATH="/home/model/bart-model"
 ENV MODEL_SERVE="True"
 
-CMD uvicorn --host 0.0.0.0 --port $PORT app:app
+# CMD uvicorn --host 0.0.0.0 --port $PORT main:app
+CMD uvicorn --host 0.0.0.0 --port $PORT main:main
+
