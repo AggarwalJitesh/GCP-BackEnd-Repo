@@ -39,7 +39,7 @@ ENV PYTHONUNBUFFERED True
 ENV APP_HOME /home
 WORKDIR $APP_HOME
 
-RUN pip install poetryr
+RUN pip install poetry
 COPY poetry.lock pyproject.toml $APP_HOME/
 
 RUN poetry config virtualenvs.create false 
