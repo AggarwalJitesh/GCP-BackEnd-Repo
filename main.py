@@ -7,6 +7,11 @@ from PIL import Image
 import numpy as np
 from keras.models import load_model
 
+# GCP cloud sql commands
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from databases import Database
+
 app = FastAPI()
 
 app.add_middleware(
@@ -39,6 +44,38 @@ async def classify_image(image: UploadFile = File(...)):
     class_name = class_labels[predicted_class]
 
     return JSONResponse({'message': str(class_name)})
+
+
+
+
+# GCP cloud sql commands
+DATABASE_URL = "mysql://sign-up-database:blockconvey2024@34.29.182.200/Signup"
+
+
+class FormData(BaseModel):
+    username: str
+    email: str
+    password: str
+
+
+database = Database(DATABASE_URL)
+
+@app.post("/submit-form")
+async def submit_form(data: FormData):
+    await database.connect()
+    
+    query = "INSERT INTO users(username, email, password) VALUES (:username, :email, :password)"
+    values = {"username": data.username,
+              "email": data.email, "password": data.password}
+    try:
+        await database.execute(query=query, values=values)
+        return {"message": "Data inserted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    await database.disconnect()
+
+
 
 if __name__ == "__main__":
     import uvicorn
