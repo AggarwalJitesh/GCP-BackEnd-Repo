@@ -26,11 +26,10 @@ model = load_model('model.h5')
 
 @app.post("/classify")
 async def classify_image(image: UploadFile = File(...)):
-    # Read the image file
     contents = await image.read()
     image = Image.open(io.BytesIO(contents))
 
-    image = image.resize((150, 150))  # Adjust the size based on your model requirements
+    image = image.resize((150, 150))  
     image_array = np.array(image) / 255.0
     image_array = np.expand_dims(image_array, axis=0)
 
@@ -49,7 +48,7 @@ async def classify_image(image: UploadFile = File(...)):
 
 
 # GCP cloud sql commands
-DATABASE_URL = "mysql://sign-up-database:blockconvey2024@34.29.182.200/Signup"
+DATABASE_URL = "mysql://root:blockconvey2024@34.29.182.200:3306/Signup"
 
 
 class FormData(BaseModel):
