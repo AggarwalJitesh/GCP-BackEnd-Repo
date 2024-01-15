@@ -45,8 +45,6 @@ async def classify_image(image: UploadFile = File(...)):
     return JSONResponse({'message': str(class_name)})
 
 
-
-
 # GCP cloud sql commands
 DATABASE_URL = "mysql://root:blockconvey2024@34.29.182.200:3306/Signup"
 
@@ -59,22 +57,29 @@ class FormData(BaseModel):
 
 database = Database(DATABASE_URL)
 
+
+async def email_exists(email: str) -> bool:
+    query = "SELECT * FROM users WHERE email = :email"
+    return await database.fetch_one(query, {"email": email})
+
+
 @app.post("/submit-form")
-async def submit_form(data: FormData):
+async def signup(data: FormData):
     await database.connect()
     
+    if await email_exists(data.email):
+        return {"message": "Email already in use, please use a different email"}
+
+    # If email does not exist, insert new user data
     query = "INSERT INTO users(username, email, password) VALUES (:username, :email, :password)"
     values = {"username": data.username,
               "email": data.email, "password": data.password}
+
     try:
-        await database.execute(query=query, values=values)
-        return {"message": "Data inserted successfully"}
+        await database.execute(query, values)
+        return {"message": "User registered successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-    await database.disconnect()
-
-
 
 if __name__ == "__main__":
     import uvicorn
