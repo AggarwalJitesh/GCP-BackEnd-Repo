@@ -9,6 +9,7 @@ tensorflow
 python-multipart
 databases
 google-cloud-storage
+aiomysql
 
 
 # typing-extensions==4.8.0
