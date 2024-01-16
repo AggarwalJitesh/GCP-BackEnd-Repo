@@ -36,13 +36,6 @@ bucket = storage_client.bucket('demo_blockconvey')
 async def classify_image(image: UploadFile = File(...)):
     contents = await image.read()
     
-    # Create a blob in the bucket
-    blob = bucket.blob(image.filename)
-    try:
-        blob.upload_from_string(contents, content_type=image.content_type)
-    except Exception as e:
-        print("Error occurred:", e)
-    
     
     image = Image.open(io.BytesIO(contents))
 
@@ -58,6 +51,10 @@ async def classify_image(image: UploadFile = File(...)):
               'no_tumor', 'pituitary_tumor']
 
     class_name = class_labels[predicted_class]
+    
+    # Create a blob in the bucket
+    blob = bucket.blob(image.filename)
+    blob.upload_from_string(contents, content_type=image.content_type)
 
     return JSONResponse({'message': str(class_name)})
 
