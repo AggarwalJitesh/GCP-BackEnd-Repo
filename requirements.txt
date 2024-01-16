@@ -8,7 +8,7 @@ Werkzeug
 tensorflow
 python-multipart
 databases
-
+google-cloud-storage
 
 
 # typing-extensions==4.8.0
