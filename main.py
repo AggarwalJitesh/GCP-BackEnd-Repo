@@ -12,6 +12,9 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from databases import Database
 
+# GCP cloud storage
+from google.cloud import storage
+
 app = FastAPI()
 
 app.add_middleware(
@@ -24,9 +27,23 @@ app.add_middleware(
 
 model = load_model('model.h5')
 
+# Initialize Google Cloud Storage client
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'service_access.json'
+storage_client = storage.Client()
+bucket = storage_client.bucket('demo_blockconvey')
+
 @app.post("/classify")
 async def classify_image(image: UploadFile = File(...)):
     contents = await image.read()
+    
+    # Create a blob in the bucket
+    blob = bucket.blob(image.filename)
+    try:
+        blob.upload_from_string(contents, content_type=image.content_type)
+    except Exception as e:
+        print("Error occurred:", e)
+    
+    
     image = Image.open(io.BytesIO(contents))
 
     image = image.resize((150, 150))  
