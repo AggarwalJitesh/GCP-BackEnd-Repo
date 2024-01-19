@@ -10,6 +10,7 @@ from keras.models import load_model
 # GCP cloud sql commands
 from pydantic import BaseModel
 from databases import Database
+# import bcrypt
 
 # GCP cloud storage
 # from google.cloud import storage
@@ -18,12 +19,16 @@ from databases import Database
 from fastapi.staticfiles import StaticFiles
 import uuid
 
+#connection with solidity
+from web3 import Web3
+
 app = FastAPI()
 
 
 # Directory where images will be stored
 IMAGE_DIR = "static"
 app.mount("/static", StaticFiles(directory="static"), name="static")
+imgurl=""
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,7 +73,7 @@ async def classify_image(image: UploadFile = File(...)):
     #save image to directory
     image.save(full_file_path)
     # Construct the URL
-    url = f"http://127.0.0.1:8000/static/{unique_filename}"
+    imgurl = f"http://127.0.0.1:8000/static/{unique_filename}"
 
 
     return JSONResponse({'message': str(class_name)})
@@ -82,6 +87,11 @@ class FormData(BaseModel):
     username: str
     email: str
     password: str
+    
+
+class loginFormData(BaseModel):
+    email: str
+    password: str
 
 database = Database(DATABASE_URL)
 
@@ -90,8 +100,19 @@ async def email_exists(email: str) -> bool:
     return await database.fetch_one(query, {"email": email})
 
 
+async def verify_password(email: str, user_password: str) -> bool:
+    query = "SELECT password FROM users WHERE email = :email"
+    result = await database.fetch_one(query, {"email": email})
+
+    if result:
+        stored_password_hash = result['password']
+        return user_password == stored_password_hash
+    else:
+        return False
+
+
 @app.post("/submit-form")
-async def signup(data: FormData):
+async def signup(data: FormData):  
     await database.connect()
     
     if await email_exists(data.email):
@@ -107,6 +128,39 @@ async def signup(data: FormData):
         return {"message": "User registered successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+    
+@app.post("/checklogin")
+async def login(data: loginFormData):
+    await database.connect()
+
+    if await email_exists(data.email) and await verify_password(data.email, data.password):
+        return {"message": "User Authenticated"}
+    
+    
+@app.get("/addtoblockchain")
+async def addtochain():
+    
+    # connection with solidity
+    w3 = Web3(Web3.HTTPProvider(
+        'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
+    
+    contract_address = '0x8219401F52eECE298E771D2cbFfB3624C139daFb'
+    contract_abi = '''
+    [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+    ]
+    '''
+    contract = w3.eth.contract(address=contract_address, abi=contract_abi)
+    
+    tx = contract.functions.storeImageUrl(imgurl).buildTransaction({'from': w3.eth.accounts[0],'nonce': w3.eth.getTransactionCount(w3.eth.accounts[0]),
+    })
+
+    return {"message": "added to chain"}
 
 if __name__ == "__main__":
     import uvicorn
