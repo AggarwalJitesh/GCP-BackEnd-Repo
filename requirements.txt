@@ -10,6 +10,7 @@ python-multipart
 databases
 google-cloud-storage
 aiomysql
+web3
 
 
 # typing-extensions==4.8.0

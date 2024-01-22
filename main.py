@@ -21,6 +21,7 @@ import uuid
 
 #connection with solidity
 from web3 import Web3
+import json
 
 app = FastAPI()
 
@@ -140,26 +141,16 @@ async def login(data: loginFormData):
     
 @app.get("/addtoblockchain")
 async def addtochain():
-    
-    # connection with solidity
-    w3 = Web3(Web3.HTTPProvider(
-        'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
-    
+    w3 = Web3(Web3.HTTPProvider('https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
+              
     contract_address = '0x8219401F52eECE298E771D2cbFfB3624C139daFb'
-    contract_abi = '''
-    [
-    {
-      "inputs": [],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    }
-    ]
-    '''
+    with open('NFTMarketplace.json', 'r') as abi_file:
+        contract_abi = json.load(abi_file)
+        
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
     
-    tx = contract.functions.storeImageUrl(imgurl).buildTransaction({'from': w3.eth.accounts[0],'nonce': w3.eth.getTransactionCount(w3.eth.accounts[0]),
-    })
-
+    contract.functions.createToken(imgurl)
+    
     return {"message": "added to chain"}
 
 if __name__ == "__main__":
