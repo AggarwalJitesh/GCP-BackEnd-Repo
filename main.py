@@ -149,7 +149,7 @@ async def addtochain():
         
     contract = w3.eth.contract(address=contract_address, abi=contract_abi)
     
-    contract.functions.createToken(imgurl)
+    contract.functions.createToken(imgurl,0)
     
     return {"message": "added to chain"}
 
