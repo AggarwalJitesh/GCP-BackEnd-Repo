@@ -13,7 +13,7 @@ from databases import Database
 # import bcrypt
 
 # GCP cloud storage
-# from google.cloud import storage
+from google.cloud import storage
 
 # static file save
 from fastapi.staticfiles import StaticFiles
@@ -42,19 +42,21 @@ app.add_middleware(
 model = load_model('model.h5')
 
 # Initialize Google Cloud Storage client
-# os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'service_access.json'
-# storage_client = storage.Client()
-# bucket = storage_client.bucket('demo_blockconvey')
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'service_access.json'
+storage_client = storage.Client()
+bucket = storage_client.bucket('demo_blockconvey')
 
 @app.post("/classify")
 async def classify_image(image: UploadFile = File(...)):
     contents = await image.read()
     unique_filename = f"image_{uuid.uuid4()}.jpg"
     full_file_path = os.path.join(IMAGE_DIR, unique_filename)
+    print(full_file_path)
     
-    #Google Cloud Storage 
-    # blob = bucket.blob(image.filename)
-    # blob.upload_from_string(contents, content_type=image.content_type)
+    # Google Cloud Storage
+    blob = bucket.blob(full_file_path)
+    blob.upload_from_string(contents, content_type=image.content_type)
+    
     
     image = Image.open(io.BytesIO(contents))
     image = image.resize((150, 150))  
@@ -64,18 +66,21 @@ async def classify_image(image: UploadFile = File(...)):
     predictions = model.predict(image_array)
 
     predicted_class = np.argmax(predictions[0])
+    
+    # class_labels = ['glioma_tumor', 'meningioma_tumor',
+    #                 'no_tumor', 'pituitary_tumor']
 
-    class_labels = ['glioma_tumor', 'meningioma_tumor',
-              'no_tumor', 'pituitary_tumor']
+    class_labels = ['Glioma Tumor', 'Meningioma Tumor',
+                    'No Tumor', 'Pituitary Tumor']
 
-    class_name = class_labels[predicted_class]
+    class_name = class_labels[predicted_class]    
     
     
     #save image to directory
     image.save(full_file_path)
     # Construct the URL
     imgurl = f"http://127.0.0.1:8000/static/{unique_filename}"
-
+    print(imgurl)
 
     return JSONResponse({'message': str(class_name)})
 
