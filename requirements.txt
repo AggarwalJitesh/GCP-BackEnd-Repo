@@ -11,7 +11,7 @@ databases
 google-cloud-storage
 aiomysql
 web3
-json
+# json
 
 
 # typing-extensions==4.8.0
