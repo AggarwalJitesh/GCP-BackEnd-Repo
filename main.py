@@ -214,13 +214,23 @@ async def addtochain():
     
     # Send the transaction
     tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-    # print("tx_hash = ", tx_hash)
+    print("tx_hash = ", tx_hash)
     
     
     # Get transaction receipt
     tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
     # print("tx_receipt = ", tx_receipt)
     
+    
+    # matching the tokenURI and the imgurl
+    token_id = 1  # Replace with your actual token ID
+    
+    token_uri = contract.functions.tokenURI(token_id).call()
+    print(f"Token URI: {token_uri}")
+    # if token_uri == imgurl:
+    #     print("The token URI matches the intended image URL.")
+    # else:
+    #     print("The token URI does not match the intended image URL.")
 
     return {"message": "added to chain"}
 
