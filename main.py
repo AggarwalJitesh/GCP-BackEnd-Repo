@@ -51,13 +51,33 @@ async def classify_image(image: UploadFile = File(...)):
     contents = await image.read()
     unique_filename = f"image_{uuid.uuid4()}.jpg"
     full_file_path = os.path.join(IMAGE_DIR, unique_filename)
-    print(full_file_path)
+    # print(full_file_path)
+    
+    # # Get the current IAM policy of the bucket
+    # policy = bucket.get_iam_policy()
+    
+    
+    # # Add a new binding to the IAM policy
+    # policy.bindings.append({
+    #     'role': 'roles/storage.objectViewer',
+    #     'members': {'allUsers'}
+    #     })
+    
+    
+    # # Save the updated IAM policy
+    # bucket.set_iam_policy(policy)
     
     # Google Cloud Storage
     blob = bucket.blob(full_file_path)
     blob.upload_from_string(contents, content_type=image.content_type)
     
     
+    
+    # Construct the GCP URL
+    global imgurl
+    imgurl = f"https://storage.cloud.google.com/{bucket.name}/{blob.name}"
+    
+        
     image = Image.open(io.BytesIO(contents))
     image = image.resize((150, 150))  
     image_array = np.array(image) / 255.0
@@ -76,11 +96,14 @@ async def classify_image(image: UploadFile = File(...)):
     class_name = class_labels[predicted_class]    
     
     
-    #save image to directory
-    image.save(full_file_path)
-    # Construct the URL
-    imgurl = f"http://127.0.0.1:8000/static/{unique_filename}"
-    print(imgurl)
+    #save image to local directory
+    # image.save(full_file_path)
+    
+    
+    # Construct the local URL
+    # imgurl = f"http://127.0.0.1:8000/static/{unique_filename}"
+    
+    
 
     return JSONResponse({'message': str(class_name)})
 
@@ -146,16 +169,59 @@ async def login(data: loginFormData):
     
 @app.get("/addtoblockchain")
 async def addtochain():
-    w3 = Web3(Web3.HTTPProvider('https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
-              
+    web3 = Web3(Web3.HTTPProvider(
+        'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
+    
+    
+    # Check connection
+    if not web3.is_connected():
+        print("Failed to connect to the Ethereum blockchain.")
+        exit()
+
+
+    # Contract Address and ABI (replace with your contract's address and ABI)
     contract_address = '0x8219401F52eECE298E771D2cbFfB3624C139daFb'
+    
     with open('NFTMarketplace.json', 'r') as abi_file:
         contract_abi = json.load(abi_file)
-        
-    contract = w3.eth.contract(address=contract_address, abi=contract_abi)
     
-    contract.functions.createToken(imgurl,0)
+
+    contract = web3.eth.contract(address=contract_address, abi=contract_abi)
     
+    # Your account and private key
+    account = '0x765941e3AA25533001280b2e0463a5544b165d0F'
+    private_key = '0xa45e9945d494d99189a78ffe74bdc21b362276d86a8b920c59a2d89c40ad9ecc'
+    
+    # Prepare the transaction
+
+    create_token_function = contract.functions.createToken(
+        imgurl)
+    create_token_txn = create_token_function.build_transaction({
+        'from': account,  
+        'nonce': web3.eth.get_transaction_count(account),
+        'gas': 2000000,  
+        # 'gasPrice': web3.to_wei('50', 'gwei')
+        'gasPrice': 0
+    })
+    
+    
+    
+
+    # Sign the transaction
+    signed_txn = web3.eth.account.sign_transaction(create_token_txn, private_key)
+    # print("signed_txn = ", signed_txn)
+    
+    
+    # Send the transaction
+    tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    # print("tx_hash = ", tx_hash)
+    
+    
+    # Get transaction receipt
+    tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+    # print("tx_receipt = ", tx_receipt)
+    
+
     return {"message": "added to chain"}
 
 if __name__ == "__main__":
