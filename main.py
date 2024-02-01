@@ -19,9 +19,11 @@ from google.cloud import storage
 from fastapi.staticfiles import StaticFiles
 import uuid
 
-#connection with solidity
+# connection with solidity
 from web3 import Web3
 import json
+from eth_abi.exceptions import EncodingError
+from hexbytes import HexBytes
 
 app = FastAPI()
 
@@ -29,11 +31,13 @@ app = FastAPI()
 # Directory where images will be stored
 IMAGE_DIR = "static"
 app.mount("/static", StaticFiles(directory="static"), name="static")
-imgurl=""
+imgurl = ""
+
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,83 +50,77 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'service_access.json'
 storage_client = storage.Client()
 bucket = storage_client.bucket('demo_blockconvey')
 
+
 @app.post("/classify")
 async def classify_image(image: UploadFile = File(...)):
     contents = await image.read()
     unique_filename = f"image_{uuid.uuid4()}.jpg"
     full_file_path = os.path.join(IMAGE_DIR, unique_filename)
     # print(full_file_path)
-    
+
     # # Get the current IAM policy of the bucket
     # policy = bucket.get_iam_policy()
-    
-    
+
     # # Add a new binding to the IAM policy
     # policy.bindings.append({
     #     'role': 'roles/storage.objectViewer',
     #     'members': {'allUsers'}
     #     })
-    
-    
+
     # # Save the updated IAM policy
     # bucket.set_iam_policy(policy)
-    
+
     # Google Cloud Storage
     blob = bucket.blob(full_file_path)
     blob.upload_from_string(contents, content_type=image.content_type)
-    
-    
-    
+
     # Construct the GCP URL
     global imgurl
     imgurl = f"https://storage.cloud.google.com/{bucket.name}/{blob.name}"
-    
-        
+
     image = Image.open(io.BytesIO(contents))
-    image = image.resize((150, 150))  
+    image = image.resize((150, 150))
     image_array = np.array(image) / 255.0
     image_array = np.expand_dims(image_array, axis=0)
 
     predictions = model.predict(image_array)
 
     predicted_class = np.argmax(predictions[0])
-    
+
     # class_labels = ['glioma_tumor', 'meningioma_tumor',
     #                 'no_tumor', 'pituitary_tumor']
 
     class_labels = ['Glioma Tumor', 'Meningioma Tumor',
                     'No Tumor', 'Pituitary Tumor']
 
-    class_name = class_labels[predicted_class]    
-    
-    
-    #save image to local directory
+    class_name = class_labels[predicted_class]
+
+    # save image to local directory
     # image.save(full_file_path)
-    
-    
+
     # Construct the local URL
     # imgurl = f"http://127.0.0.1:8000/static/{unique_filename}"
-    
-    
 
     return JSONResponse({'message': str(class_name)})
-
 
 
 # GCP cloud sql commands
 DATABASE_URL = "mysql://root:blockconvey2024@34.29.182.200:3306/Signup"
 
+
 class FormData(BaseModel):
     username: str
     email: str
     password: str
-    
+
 
 class loginFormData(BaseModel):
     email: str
     password: str
 
+
 database = Database(DATABASE_URL)
+
 
 async def email_exists(email: str) -> bool:
     query = "SELECT * FROM users WHERE email = :email"
@@ -141,9 +139,9 @@ async def verify_password(email: str, user_password: str) -> bool:
 
 
 @app.post("/submit-form")
-async def signup(data: FormData):  
+async def signup(data: FormData):
     await database.connect()
-    
+
     if await email_exists(data.email):
         return {"message": "Email already in use, please use a different email"}
 
@@ -157,8 +155,8 @@ async def signup(data: FormData):
         return {"message": "User registered successfully"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-    
+
+
 @app.post("/checklogin")
 async def login(data: loginFormData):
     await database.connect()
@@ -167,74 +165,150 @@ async def login(data: loginFormData):
         return {"message": "User Authenticated"}
     
     
+    
+# BLOCKCHAIN CONNECTION
+
+web3 = Web3(Web3.HTTPProvider(
+        'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
+
+# Check connection
+if not web3.is_connected():
+    print("Failed to connect to the Ethereum blockchain.")
+    exit()
+
+# Contract Address and ABI (replace with your contract's address and ABI)
+contract_address = '0x3A106BcA1383684C67136394B42423F88F355e1d'
+
+with open('NFT.json', 'r') as abi_file:
+    contract_abi = json.load(abi_file)
+    
+    
+# test dictionary
+# original_dict = {
+#     "blockHash": HexBytes(
+#         "0xd4591f78f55d4e1a9545cf29de97618957002f92dba273db66db58925bc6395c"
+#     ),
+#     "blockNumber": 9156308,
+#     "from": "0x765941e3AA25533001280b2e0463a5544b165d0F",
+#     "gas": 2000000,
+#     "gasPrice": 0,
+#     "hash": HexBytes(
+#             "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"
+#     ),
+#     "input": HexBytes(
+#         "0x45576f940000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000006768747470733a2f2f73746f726167652e636c6f75642e676f6f676c652e636f6d2f64656d6f5f626c6f636b636f6e7665792f7374617469632f696d6167655f38313133636366662d313636392d343031332d623439642d6664363463316161613839312e6a706700000000000000000000000000000000000000000000000000"
+#     ),
+#     "nonce": 21,
+#     "to": "0x3A106BcA1383684C67136394B42423F88F355e1d",
+#     "transactionIndex": 0,
+#     "value": 0,
+#     "v": 20037,
+#     "r": HexBytes(
+#         "0xdaf7c9d1edd7867da944d0f08819462709b2207f3a78950d6e2c1e0ef03e8dd4"
+#     ),
+#     "s": HexBytes(
+#         "0x4cd76070f11d3120daff70fa1b508e6036366ae18ee73883ea4f52e890ce3c79"
+#     ),
+# }
+
+
+original_dict = dict(web3.eth.get_transaction(
+    "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
+
+def hexbytes_to_hex(json_data):
+    if isinstance(json_data, dict):
+        for key, value in json_data.items():
+            if isinstance(value, HexBytes):
+                json_data[key] = value.hex()
+            elif isinstance(value, (dict, list)):
+                json_data[key] = hexbytes_to_hex(value)
+    elif isinstance(json_data, list):
+        json_data = [hexbytes_to_hex(item) if isinstance(
+            item, (dict, list)) else item for item in json_data]
+    return json_data
+
+
+json_serializable_dict = hexbytes_to_hex(original_dict)
+
+@app.get("/transaction")
+async def transaction_dict():
+    return json_serializable_dict
+
+
 @app.get("/addtoblockchain")
 async def addtochain():
-    web3 = Web3(Web3.HTTPProvider(
-        'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
     
-    
-    # Check connection
-    if not web3.is_connected():
-        print("Failed to connect to the Ethereum blockchain.")
-        exit()
-
-
-    # Contract Address and ABI (replace with your contract's address and ABI)
-    contract_address = '0x8219401F52eECE298E771D2cbFfB3624C139daFb'
-    
-    with open('NFTMarketplace.json', 'r') as abi_file:
-        contract_abi = json.load(abi_file)
-    
-
-    contract = web3.eth.contract(address=contract_address, abi=contract_abi)
-    
-    # Your account and private key
-    account = '0x765941e3AA25533001280b2e0463a5544b165d0F'
-    private_key = '0xa45e9945d494d99189a78ffe74bdc21b362276d86a8b920c59a2d89c40ad9ecc'
-    
-    # Prepare the transaction
-
-    create_token_function = contract.functions.createToken(
-        imgurl)
-    create_token_txn = create_token_function.build_transaction({
-        'from': account,  
+    try:
+        
+        contract = web3.eth.contract(address=contract_address, abi=contract_abi)
+        
+        # Your account and private key
+        account = '0x765941e3AA25533001280b2e0463a5544b165d0F'
+        private_key = '0xa45e9945d494d99189a78ffe74bdc21b362276d86a8b920c59a2d89c40ad9ecc'
+        
+        
+        # print("transaction_count = ", web3.eth.get_transaction_count(
+        # "0x765941e3AA25533001280b2e0463a5544b165d0F", "latest"))
+        
+        # original_dict = dict(web3.eth.get_transaction(
+        # "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
+        
+        print(web3.eth.get_transaction(
+        "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
+        
+        # Prepare the transaction
+        create_token_txn = contract.functions.createToken(imgurl).build_transaction({
+        'from': account,
         'nonce': web3.eth.get_transaction_count(account),
-        'gas': 2000000,  
+        'gas': 2000000,
         # 'gasPrice': web3.to_wei('50', 'gwei')
         'gasPrice': 0
-    })
-    
-    
-    
+        })
+        
+        # Sign the transaction
+        signed_txn = web3.eth.account.sign_transaction(create_token_txn, private_key)
+        # print("signed_txn = ", signed_txn)
+        
+        
+        
+        # Send the transaction
+        tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        tx_hash_hex = tx_hash.hex()
+        # print("tx_hash = ", tx_hash_hex)
+        
+        
+        # Get transaction receipt
+        tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+        # print("tx_receipt = ", tx_receipt)
+        
+        # token_id = 1
+        
+        # image_url = contract.functions.getImageURL(token_id).call()
+        # if image_url:
+        #     return {"image_url": image_url}
+        # else:
+        #     raise HTTPException(
+        #         status_code=404, detail="Image URL not found for token ID")
 
-    # Sign the transaction
-    signed_txn = web3.eth.account.sign_transaction(create_token_txn, private_key)
-    # print("signed_txn = ", signed_txn)
-    
-    
-    # Send the transaction
-    tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-    print("tx_hash = ", tx_hash)
-    
-    
-    # Get transaction receipt
-    tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-    # print("tx_receipt = ", tx_receipt)
-    
-    
-    # matching the tokenURI and the imgurl
-    token_id = 1  # Replace with your actual token ID
-    
-    token_uri = contract.functions.tokenURI(token_id).call()
-    print(f"Token URI: {token_uri}")
-    # if token_uri == imgurl:
-    #     print("The token URI matches the intended image URL.")
+    except EncodingError:
+        raise HTTPException(status_code=400, detail="Invalid image URL format")
+
+    # Parse the transaction receipt to find the events
+
+    # if tx_receipt.status == 1 and tx_receipt.logs:
+    #     try:
+    #         decoded_logs = contract.events.Transfer().processReceipt(tx_receipt)
+    #         for event in decoded_logs:
+    #             token_id = event.args.tokenId
+    #             print("Token ID:", token_id)
+    #     except Exception as e:
+    #         print("Error processing receipt:", e)
     # else:
-    #     print("The token URI does not match the intended image URL.")
+    #     print("No successful transfer events found or transaction failed.")
 
-    return {"message": "added to chain"}
+
+    # return {"message": "added to chain"}
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
-
