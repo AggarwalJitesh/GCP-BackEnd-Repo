@@ -10,7 +10,6 @@ from keras.models import load_model
 # GCP cloud sql commands
 from pydantic import BaseModel
 from databases import Database
-# import bcrypt
 
 # GCP cloud storage
 from google.cloud import storage
@@ -35,6 +34,8 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # test variable
 imgurl = ""
 classificationResult = ""
+unique_filename = ""
+original_dict = {}
 
 
 app.add_middleware(
@@ -56,21 +57,10 @@ bucket = storage_client.bucket('demo_blockconvey')
 @app.post("/classify")
 async def classify_image(image: UploadFile = File(...)):
     contents = await image.read()
+    global unique_filename
     unique_filename = f"image_{uuid.uuid4()}.jpg"
     full_file_path = os.path.join(IMAGE_DIR, unique_filename)
     # print(full_file_path)
-
-    # # Get the current IAM policy of the bucket
-    # policy = bucket.get_iam_policy()
-
-    # # Add a new binding to the IAM policy
-    # policy.bindings.append({
-    #     'role': 'roles/storage.objectViewer',
-    #     'members': {'allUsers'}
-    #     })
-
-    # # Save the updated IAM policy
-    # bucket.set_iam_policy(policy)
 
     # Google Cloud Storage
     blob = bucket.blob(full_file_path)
@@ -88,9 +78,6 @@ async def classify_image(image: UploadFile = File(...)):
     predictions = model.predict(image_array)
 
     predicted_class = np.argmax(predictions[0])
-
-    # class_labels = ['glioma_tumor', 'meningioma_tumor',
-    #                 'no_tumor', 'pituitary_tumor']
 
     class_labels = ['Glioma Tumor', 'Meningioma Tumor',
                     'No Tumor', 'Pituitary Tumor']
@@ -208,16 +195,18 @@ def hexbytes_to_hex(json_data):
     return json_data
 
 
-json_serializable_dict = hexbytes_to_hex(original_dict)
-
-
 @app.get("/transaction")
 async def transaction_dict():
-    
+
+    json_serializable_dict = hexbytes_to_hex(original_dict)
+
     data_to_send = {
         "blockHash": json_serializable_dict["blockHash"],
         "blockNumber": json_serializable_dict["blockNumber"],
         "hash": json_serializable_dict["hash"],
+        "imageName": unique_filename,
+        "result": classificationResult,
+        "url": imgurl
     }
 
     return data_to_send
@@ -229,13 +218,6 @@ async def addtochain():
     try:
 
         contract = w3.eth.contract(address=contract_address, abi=contract_abi)
-
-        # print("transaction_count = ", web3.eth.get_transaction_count(
-        # "0x765941e3AA25533001280b2e0463a5544b165d0F", "latest"))
-
-        # original_dict = dict(w3.eth.get_transaction("0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
-        
-        print("imgurl = ", imgurl)
 
         create_token_txn = contract.functions.createToken(imgurl).build_transaction({
             'from': account_address,
@@ -260,24 +242,11 @@ async def addtochain():
         tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
         print("tx_receipt = ", tx_receipt)
 
-        # return {"added to chain"}
+        global original_dict
 
-        # user_address = '0x765941e3AA25533001280b2e0463a5544b165d0F'
-
-        # submissions = contract.functions.getUserSubmissions(
-        #     user_address).call()
-
-        # return {'submissions': submissions}
-
-        # token_id = 1
+        original_dict = dict(w3.eth.get_transaction(tx_hash))
         
-        image_url = contract.functions.getAllTokenURIs().call()
-        print("image_url = ", image_url)
-        if image_url:
-            return {"image_url": image_url}
-        else:
-            raise HTTPException(
-                status_code=404, detail="Image URL not found for token ID")
+        return {"message": "added successfully"}
 
     except EncodingError:
         raise HTTPException(status_code=400, detail="Invalid image URL format")
