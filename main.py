@@ -31,8 +31,10 @@ app = FastAPI()
 # Directory where images will be stored
 IMAGE_DIR = "static"
 app.mount("/static", StaticFiles(directory="static"), name="static")
-imgurl = ""
 
+# test variable
+imgurl = ""
+classificationResult = ""
 
 
 app.add_middleware(
@@ -94,6 +96,9 @@ async def classify_image(image: UploadFile = File(...)):
                     'No Tumor', 'Pituitary Tumor']
 
     class_name = class_labels[predicted_class]
+
+    global classificationResult
+    classificationResult = class_name
 
     # save image to local directory
     # image.save(full_file_path)
@@ -163,57 +168,32 @@ async def login(data: loginFormData):
 
     if await email_exists(data.email) and await verify_password(data.email, data.password):
         return {"message": "User Authenticated"}
-    
-    
-    
+
+
 # BLOCKCHAIN CONNECTION
 
-web3 = Web3(Web3.HTTPProvider(
-        'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
+w3 = Web3(Web3.HTTPProvider(
+    'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
 
 # Check connection
-if not web3.is_connected():
-    print("Failed to connect to the Ethereum blockchain.")
-    exit()
+# if not w3.is_connected():
+#     print("Failed to connect to the Ethereum blockchain.")
+#     exit()
 
 # Contract Address and ABI (replace with your contract's address and ABI)
-contract_address = '0x3A106BcA1383684C67136394B42423F88F355e1d'
+contract_address = '0x96DE750De9C3AB4b5916FbbF977AE6FE2Fc0f739'
+
 
 with open('NFT.json', 'r') as abi_file:
     contract_abi = json.load(abi_file)
-    
-    
-# test dictionary
-# original_dict = {
-#     "blockHash": HexBytes(
-#         "0xd4591f78f55d4e1a9545cf29de97618957002f92dba273db66db58925bc6395c"
-#     ),
-#     "blockNumber": 9156308,
-#     "from": "0x765941e3AA25533001280b2e0463a5544b165d0F",
-#     "gas": 2000000,
-#     "gasPrice": 0,
-#     "hash": HexBytes(
-#             "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"
-#     ),
-#     "input": HexBytes(
-#         "0x45576f940000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000006768747470733a2f2f73746f726167652e636c6f75642e676f6f676c652e636f6d2f64656d6f5f626c6f636b636f6e7665792f7374617469632f696d6167655f38313133636366662d313636392d343031332d623439642d6664363463316161613839312e6a706700000000000000000000000000000000000000000000000000"
-#     ),
-#     "nonce": 21,
-#     "to": "0x3A106BcA1383684C67136394B42423F88F355e1d",
-#     "transactionIndex": 0,
-#     "value": 0,
-#     "v": 20037,
-#     "r": HexBytes(
-#         "0xdaf7c9d1edd7867da944d0f08819462709b2207f3a78950d6e2c1e0ef03e8dd4"
-#     ),
-#     "s": HexBytes(
-#         "0x4cd76070f11d3120daff70fa1b508e6036366ae18ee73883ea4f52e890ce3c79"
-#     ),
-# }
+
+account_address = '0x765941e3AA25533001280b2e0463a5544b165d0F'
+private_key = '0xa45e9945d494d99189a78ffe74bdc21b362276d86a8b920c59a2d89c40ad9ecc'
 
 
-original_dict = dict(web3.eth.get_transaction(
-    "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
+original_dict = dict(w3.eth.get_transaction(
+    "0xa01413de623e7f622c34c2f415188867e690ea66fe56bf8ec2ae068c458ecbdb"))
+
 
 def hexbytes_to_hex(json_data):
     if isinstance(json_data, dict):
@@ -230,65 +210,74 @@ def hexbytes_to_hex(json_data):
 
 json_serializable_dict = hexbytes_to_hex(original_dict)
 
+
 @app.get("/transaction")
 async def transaction_dict():
-    return json_serializable_dict
+    
+    data_to_send = {
+        "blockHash": json_serializable_dict["blockHash"],
+        "blockNumber": json_serializable_dict["blockNumber"],
+        "hash": json_serializable_dict["hash"],
+    }
+
+    return data_to_send
 
 
 @app.get("/addtoblockchain")
 async def addtochain():
-    
+
     try:
-        
-        contract = web3.eth.contract(address=contract_address, abi=contract_abi)
-        
-        # Your account and private key
-        account = '0x765941e3AA25533001280b2e0463a5544b165d0F'
-        private_key = '0xa45e9945d494d99189a78ffe74bdc21b362276d86a8b920c59a2d89c40ad9ecc'
-        
-        
+
+        contract = w3.eth.contract(address=contract_address, abi=contract_abi)
+
         # print("transaction_count = ", web3.eth.get_transaction_count(
         # "0x765941e3AA25533001280b2e0463a5544b165d0F", "latest"))
+
+        # original_dict = dict(w3.eth.get_transaction("0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
         
-        # original_dict = dict(web3.eth.get_transaction(
-        # "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
-        
-        print(web3.eth.get_transaction(
-        "0xcae329284f473fdb34daa2de3d8b7657b4dfe1bac8dd398dd15fc73845b7c8af"))
-        
-        # Prepare the transaction
+        print("imgurl = ", imgurl)
+
         create_token_txn = contract.functions.createToken(imgurl).build_transaction({
-        'from': account,
-        'nonce': web3.eth.get_transaction_count(account),
-        'gas': 2000000,
-        # 'gasPrice': web3.to_wei('50', 'gwei')
-        'gasPrice': 0
+            'from': account_address,
+            'nonce': w3.eth.get_transaction_count(account_address),
+            'gas': 2000000,
+            # 'gasPrice': web3.to_wei('50', 'gwei')
+            'gasPrice': 0
+
         })
-        
+
         # Sign the transaction
-        signed_txn = web3.eth.account.sign_transaction(create_token_txn, private_key)
+        signed_tx = w3.eth.account.sign_transaction(
+            create_token_txn, private_key=private_key)
         # print("signed_txn = ", signed_txn)
-        
-        
-        
+
         # Send the transaction
-        tx_hash = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
         tx_hash_hex = tx_hash.hex()
-        # print("tx_hash = ", tx_hash_hex)
-        
-        
+        print("tx_hash = ", tx_hash_hex)
+
         # Get transaction receipt
-        tx_receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-        # print("tx_receipt = ", tx_receipt)
-        
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
+        print("tx_receipt = ", tx_receipt)
+
+        # return {"added to chain"}
+
+        # user_address = '0x765941e3AA25533001280b2e0463a5544b165d0F'
+
+        # submissions = contract.functions.getUserSubmissions(
+        #     user_address).call()
+
+        # return {'submissions': submissions}
+
         # token_id = 1
         
-        # image_url = contract.functions.getImageURL(token_id).call()
-        # if image_url:
-        #     return {"image_url": image_url}
-        # else:
-        #     raise HTTPException(
-        #         status_code=404, detail="Image URL not found for token ID")
+        image_url = contract.functions.getAllTokenURIs().call()
+        print("image_url = ", image_url)
+        if image_url:
+            return {"image_url": image_url}
+        else:
+            raise HTTPException(
+                status_code=404, detail="Image URL not found for token ID")
 
     except EncodingError:
         raise HTTPException(status_code=400, detail="Invalid image URL format")
@@ -306,8 +295,6 @@ async def addtochain():
     # else:
     #     print("No successful transfer events found or transaction failed.")
 
-
-    # return {"message": "added to chain"}
 
 if __name__ == "__main__":
     import uvicorn
