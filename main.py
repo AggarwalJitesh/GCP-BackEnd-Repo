@@ -162,12 +162,6 @@ async def login(data: loginFormData):
 w3 = Web3(Web3.HTTPProvider(
     'https://nd-651-483-575.p2pify.com/cbda8d1c04f6e11e5f15b7a9cb95183f'))
 
-# Check connection
-# if not w3.is_connected():
-#     print("Failed to connect to the Ethereum blockchain.")
-#     exit()
-
-# Contract Address and ABI (replace with your contract's address and ABI)
 contract_address = '0x96DE750De9C3AB4b5916FbbF977AE6FE2Fc0f739'
 
 
@@ -177,9 +171,6 @@ with open('NFT.json', 'r') as abi_file:
 account_address = '0x765941e3AA25533001280b2e0463a5544b165d0F'
 private_key = '0xa45e9945d494d99189a78ffe74bdc21b362276d86a8b920c59a2d89c40ad9ecc'
 
-
-original_dict = dict(w3.eth.get_transaction(
-    "0xa01413de623e7f622c34c2f415188867e690ea66fe56bf8ec2ae068c458ecbdb"))
 
 
 def hexbytes_to_hex(json_data):
@@ -243,7 +234,6 @@ async def addtochain():
         print("tx_receipt = ", tx_receipt)
 
         global original_dict
-
         original_dict = dict(w3.eth.get_transaction(tx_hash))
         
         return {"message": "added successfully"}
