@@ -216,7 +216,6 @@ async def addtochain():
             'from': account_address,
             'nonce': w3.eth.get_transaction_count(account_address),
             'gas': 2000000,
-            # 'gasPrice': web3.to_wei('50', 'gwei')
             'gasPrice': 0
 
         })
@@ -237,7 +236,9 @@ async def addtochain():
 
         json_serializable_dict = hexbytes_to_hex(original_dict)
 
-        current_datetime = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        # current_datetime = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
         # saving image perticular in gcp
 
@@ -260,11 +261,6 @@ async def addtochain():
 @app.get("/transaction")
 async def transaction_dict():
     
-    # array = [{'imagename': 'image_b973a0f6-381d-4110-a334-c199ffb6a249.jpg', 'result': 'No Tumor', 'blockHash': '0xde1ec045879ab33eefc5be20d828def04effdfda7b7925931ef91814af51abaa', 'blockNumber': '9868486', 'txnHash': '0xde1ec045879ab33eefc5be20d828def04effdfda7b7925931ef91814af51abaa', 'imgUrl': 'https://storage.cloud.google.com/demo_blockconvey/static/image_b973a0f6-381d-4110-a334-c199ffb6a249.jpg', 'dateTime': '2024-02-08T20:26:04'}, {'imagename': 'image_6b4e1ed8-cb1b-4bc3-bde4-c172ae22cfec.jpg', 'result': 'No Tumor', 'blockHash': '0x32786e8ee64214620168b00c1338e079292e1953c512c220ced160e96ed95e97', 'blockNumber': '9868746', 'txnHash': '0x32786e8ee64214620168b00c1338e079292e1953c512c220ced160e96ed95e97', 'imgUrl': 'https://storage.cloud.google.com/demo_blockconvey/static/image_6b4e1ed8-cb1b-4bc3-bde4-c172ae22cfec.jpg', 'dateTime': '2024-02-08T20:30:24'}, {'imagename': 'image_7a5c5356-6ff9-4290-8f1d-63ad1941ce86.jpg', 'result': 'No Tumor', 'blockHash': '0xac4174f76a0a6fa36b63687321bfe11572ead789c6e227824d15f131b94469c0', 'blockNumber': '9870273', 'txnHash': '0xac4174f76a0a6fa36b63687321bfe11572ead789c6e227824d15f131b94469c0', 'imgUrl': 'https://storage.cloud.google.com/demo_blockconvey/static/image_7a5c5356-6ff9-4290-8f1d-63ad1941ce86.jpg', 'dateTime': '2024-02-08T20:55:51'}, {'imagename': 'image_08be4813-2416-4add-9832-aea79a71f260.jpg', 'result': 'No Tumor', 'blockHash': '0xadbcdaacb0cf7c2f42700f73f3ebd4179258c7f586ba5922a4c21012f1019b1a', 'blockNumber': '9870313', 'txnHash': '0xadbcdaacb0cf7c2f42700f73f3ebd4179258c7f586ba5922a4c21012f1019b1a', 'imgUrl': 'https://storage.cloud.google.com/demo_blockconvey/static/image_08be4813-2416-4add-9832-aea79a71f260.jpg', 'dateTime': '2024-02-08T20:56:31'}]
-    
-    # return array
-    
-    
     await database_uploadhistory.connect()
 
     query = "SELECT imagename, result, blockHash , blockNumber , txnHash , imgUrl, dateTime FROM uploadLogs WHERE userid = :userid"
@@ -272,8 +268,6 @@ async def transaction_dict():
     
     if result:
         return [dict(row) for row in result]
-
-
 
 if __name__ == "__main__":
     import uvicorn
