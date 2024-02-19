@@ -14,6 +14,7 @@ from databases import Database
 # GCP cloud storage
 from google.cloud import storage
 from datetime import datetime
+import pytz
 
 # static file save
 from fastapi.staticfiles import StaticFiles
@@ -237,8 +238,8 @@ async def addtochain():
         json_serializable_dict = hexbytes_to_hex(original_dict)
 
         # current_datetime = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-        current_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+        current_datetime = datetime.now(pytz.timezone(
+            'America/New_York')).strftime("%Y-%m-%d %H:%M:%S")
 
         # saving image perticular in gcp
 
@@ -260,17 +261,15 @@ async def addtochain():
 
 @app.get("/transaction")
 async def transaction_dict():
-    
+
     await database_uploadhistory.connect()
 
     query = "SELECT imagename, result, blockHash , blockNumber , txnHash , imgUrl, dateTime FROM uploadLogs WHERE userid = :userid"
     result = await database_uploadhistory.fetch_all(query, {"userid": userid})
-    
+
     if result:
         return [dict(row) for row in result]
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
-
-
